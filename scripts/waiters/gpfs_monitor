@@ -1,0 +1,51 @@
+#!/bin/bash
+#
+# Init file for gpfs monitoring
+# jessig
+#
+# chkconfig: 2345 99 99
+# description: logs gpfs IO and waiters
+
+start()
+{
+        echo -n $"Starting getio_s.ksh: "
+        /usr/local/bin/getio_s.ksh 30 fs_io_s >>/tmp/mmfs/monitor.getio.log &
+        echo -n $"Starting watchWaiters.ksh: "
+	/usr/local/bin/watchWaiters.ksh 30 1 0 &
+        echo
+}
+
+stop()
+{
+        echo -n $"Stopping getio_s.ksh: "
+        pkill getio_s.ksh
+	pkill mmpmon
+	echo
+        echo -n $"Stopping watchWaiters.ksh: "
+	pkill watchWaiters	
+        RETVAL=$?
+        
+        echo
+}
+
+
+
+
+case "$1" in
+        start)
+                start
+                ;;
+        stop)
+                stop
+                ;;
+	restart)
+      		;;
+    	condrestart)
+      		;;
+    	status)
+      		;;
+       *)
+                echo $"Usage: $0 {start|stop}"
+                RETVAL=1
+esac
+exit $RETVAL
